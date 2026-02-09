@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Spreadsheet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input {
+      width: 300px;
+      padding: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Search Data</h2>
+
+<input
+  type="text"
+  id="searchInput"
+  placeholder="Type to search..."
+  onkeyup="filterTable()"
+/>
+
+<table id="dataTable"></table>
+
+<script>
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIKiSBKdDIiVIcD-lojjBLq3UbbTxM7IGuvcQJc0OVxPGaqc3WN-k2cpoeI-dez0WBOkZxhX6O28l/pub?gid=0&single=true&output=csv";
+
+fetch(csvUrl)
+  .then(response => response.text())
+  .then(csv => {
+    const rows = csv.trim().split("\n").map(r => r.split(","));
+    const table = document.getElementById("dataTable");
+
+    rows.forEach((row, rowIndex) => {
+      const tr = document.createElement("tr");
+      row.forEach(cell => {
+        const el = document.createElement(rowIndex === 0 ? "th" : "td");
+        el.textContent = cell;
+        tr.appendChild(el);
+      });
+      table.appendChild(tr);
+    });
+  });
+
+function filterTable() {
+  const filter = document.getElementById("searchInput").value.toLowerCase();
+  const rows = document.querySelectorAll("#dataTable tr");
+
+  rows.forEach((row, index) => {
+    if (index === 0) return; // header
+    row.style.display = row.innerText.toLowerCase().includes(filter)
+      ? ""
+      : "none";
+  });
+}
+</script>
+
+</body>
+</html>
